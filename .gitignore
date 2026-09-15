@@ -1,0 +1,177 @@
+# ==============================================================================
+# 1. Python & Bytecode / Cache
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==============================================================================
+# 2. Virtual Environments
+# ==============================================================================
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.conda/
+conda-env/
+
+# ==============================================================================
+# 3. Environment Variables & Secrets
+# ==============================================================================
+.env
+.env.*
+!.env.example
+*.local
+
+# ==============================================================================
+# 4. Jupyter Notebooks
+# ==============================================================================
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+.virtual_documents/
+
+# ==============================================================================
+# 5. Testing, Coverage & Linters
+# ==============================================================================
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+
+# ==============================================================================
+# 6. Data & Datasets (Bảo vệ dữ liệu lớn, giữ cấu trúc thư mục qua .gitkeep)
+# ==============================================================================
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/splits/*
+!data/splits/.gitkeep
+# Uncomment dòng dưới nếu muốn commit định nghĩa phân chia fold (CV splits)
+# !data/splits/cv_folds.json
+
+# Định dạng dữ liệu bảng & mảng nhị phân
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.npz
+*.npy
+
+# File nén
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# ==============================================================================
+# 7. Experiment Artifacts (Optuna, Models, Predictions, SHAP, Logs)
+# ==============================================================================
+# Optuna databases & storage
+artifacts/optuna/*
+!artifacts/optuna/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+
+# Trained models & serialization
+artifacts/models/*
+!artifacts/models/.gitkeep
+*.joblib
+*.pkl
+*.pickle
+*.model
+*.bin
+*.ubj
+*.pt
+*.onnx
+
+# Output predictions & probabilities
+artifacts/predictions/*
+!artifacts/predictions/.gitkeep
+
+# SHAP values & explanation matrices
+artifacts/shap/*
+!artifacts/shap/.gitkeep
+
+# Execution logs
+artifacts/logs/*
+!artifacts/logs/.gitkeep
+*.log
+
+# Generated tables & figures
+artifacts/tables/*
+!artifacts/tables/.gitkeep
+artifacts/figures/*
+!artifacts/figures/.gitkeep
+# Bỏ comment nếu muốn lưu lại figure / table báo cáo cuối cùng:
+# !artifacts/figures/*.png
+# !artifacts/figures/*.pdf
+# !artifacts/tables/*.tex
+
+# ==============================================================================
+# 8. Operating System & IDEs
+# ==============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# IDEs & Editors
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
