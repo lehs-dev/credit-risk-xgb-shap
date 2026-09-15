@@ -1,0 +1,74 @@
+# ==============================================================================
+# XGBoost Hyperparameter Search Space (Table 5.7 in Research Outline)
+# ==============================================================================
+
+search_space:
+  n_estimators:
+    type: "int"
+    low: 100
+    high: 1000
+    step: 50
+    description: "Number of gradient boosted trees"
+
+  max_depth:
+    type: "int"
+    low: 2
+    high: 10
+    step: 1
+    description: "Maximum tree depth for base learners"
+
+  learning_rate:
+    type: "float"
+    low: 0.01
+    high: 0.30
+    log: true
+    description: "Boosting learning rate (shrinkage)"
+
+  min_child_weight:
+    type: "int"
+    low: 1
+    high: 15
+    step: 1
+    description: "Minimum sum of instance weight (hessian) needed in a child"
+
+  subsample:
+    type: "float"
+    low: 0.50
+    high: 1.00
+    step: 0.05
+    description: "Subsample ratio of the training instances"
+
+  colsample_bytree:
+    type: "float"
+    low: 0.50
+    high: 1.00
+    step: 0.05
+    description: "Subsample ratio of columns when constructing each tree"
+
+  gamma:
+    type: "float"
+    low: 0.0
+    high: 10.0
+    step: 0.5
+    description: "Minimum loss reduction required to make a further partition on a leaf node"
+
+  reg_alpha:
+    type: "float"
+    low: 0.0001
+    high: 10.0
+    log: true
+    description: "L1 regularization term on weights"
+
+  reg_lambda:
+    type: "float"
+    low: 0.001
+    high: 100.0
+    log: true
+    description: "L2 regularization term on weights"
+
+fixed_params:
+  objective: "binary:logistic"
+  eval_metric: "logloss"
+  tree_method: "hist"
+  random_state: 42
+  n_jobs: -1
