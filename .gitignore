@@ -140,12 +140,16 @@ artifacts/logs/*
 # Generated tables & figures
 artifacts/tables/*
 !artifacts/tables/.gitkeep
+!artifacts/tables/*.csv
 artifacts/figures/*
 !artifacts/figures/.gitkeep
 # Bỏ comment nếu muốn lưu lại figure / table báo cáo cuối cùng:
 # !artifacts/figures/*.png
 # !artifacts/figures/*.pdf
 # !artifacts/tables/*.tex
+
+# CatBoost training outputs
+catboost_info/
 
 # ==============================================================================
 # 8. Operating System & IDEs

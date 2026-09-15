@@ -1,0 +1,67 @@
+# ==============================================================================
+# Data Configuration for Default of Credit Card Clients Dataset
+# ==============================================================================
+
+paths:
+  raw_data_path: "data/raw/default_credit_card.csv"
+  processed_data_dir: "data/processed"
+  splits_dir: "data/splits"
+
+columns:
+  id_column: "ID"
+  target_column: "default.payment.next.month"
+  target_column_clean: "default_payment_next_month"
+
+  # Biến phân loại nhân khẩu học
+  categorical_features:
+    - "SEX"
+    - "EDUCATION"
+    - "MARRIAGE"
+
+  # Biến số liên tục (Hạn mức & Độ tuổi)
+  numerical_features:
+    - "LIMIT_BAL"
+    - "AGE"
+
+  # Lịch sử trạng thái thanh toán từ tháng 4 đến tháng 9
+  payment_status_features:
+    - "PAY_0"
+    - "PAY_2"
+    - "PAY_3"
+    - "PAY_4"
+    - "PAY_5"
+    - "PAY_6"
+
+  # Số tiền trên sao kê hóa đơn hàng tháng
+  bill_amount_features:
+    - "BILL_AMT1"
+    - "BILL_AMT2"
+    - "BILL_AMT3"
+    - "BILL_AMT4"
+    - "BILL_AMT5"
+    - "BILL_AMT6"
+
+  # Số tiền đã thanh toán hàng tháng
+  payment_amount_features:
+    - "PAY_AMT1"
+    - "PAY_AMT2"
+    - "PAY_AMT3"
+    - "PAY_AMT4"
+    - "PAY_AMT5"
+    - "PAY_AMT6"
+
+# Quy tắc làm sạch danh mục theo chuẩn Yeh & Lien (2009)
+preprocessing:
+  education_unknown_values: [0, 5, 6]
+  education_replacement: 4 # Nhóm vào 'Others'
+  marriage_unknown_values: [0]
+  marriage_replacement: 3  # Nhóm vào 'Others'
+
+# Giao thức phân chia dữ liệu & SHAP Reference
+splits:
+  test_size: 0.20
+  cv_n_splits: 5
+  random_state: 42
+  stratify: true
+  shap_reference_size: 1000
+  shap_reference_seed: 42
