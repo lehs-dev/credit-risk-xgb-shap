@@ -1,0 +1,2 @@
+single_study,multi_study,single_complete,multi_complete,single_failed,multi_failed,protocol_fingerprint,pareto_manual_equals_optuna,pareto_trial_count,pareto_unique_objective_count,selected_count,default_n_repeats,default_n_reference,test_accessed
+xgb_auc_tpe,xgb_auc_shap_nsgaii,64,64,0,0,3053c59a3405d280a095a044b381542b81054a3e8310faaf37670753054aff8b,True,6,6,3,5,1000,False

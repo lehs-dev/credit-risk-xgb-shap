@@ -89,6 +89,9 @@ python scripts/05_run_multi_hpo.py --pilot
 # Lượt chính: 64 trial hoàn thành mỗi nhánh, tách khỏi pilot
 python scripts/04_run_single_hpo.py
 python scripts/05_run_multi_hpo.py
+
+# Kiểm tra Pareto độc lập và chọn ba nghiệm đại diện trên Development
+python scripts/06_verify_pareto.py
 ```
 
 ---
@@ -108,3 +111,5 @@ Dữ liệu đầu vào là bản CSV của [UCI Default of Credit Card Clients]
 Bản nháp phương pháp tính SHAP và độ ổn định nằm tại [`docs/chuong2_phuong_phap_shap.md`](docs/chuong2_phuong_phap_shap.md).
 
 Bản nháp mục [2.9 về HPO](docs/chuong2_hpo_phuong_phap.md) mô tả TPE, NSGA-II, ngân sách và cách chọn Pareto. Mỗi trial ở cả hai nhánh đều fit 5 mô hình Core CV và tính SHAP trên cùng 1.000 quan sát tham chiếu; nhánh đơn mục tiêu chỉ đưa ROC-AUC vào sampler. SQLite lưu ở `artifacts/optuna/hpo.sqlite3`; các bảng trial, best/Pareto và manifest được xuất vào `artifacts/tables/`. Khi chạy lại cùng study, script chạy thêm đến đủ số trial `COMPLETE` đã cấu hình. Lịch sử trial được giữ, nhưng chuỗi đề xuất sau khi khởi tạo lại sampler có thể khác một lượt chạy liên tục.
+
+Bản nháp [mục 2.10–2.11 về Pareto và chọn nghiệm](docs/chuong2_pareto_phuong_phap.md) giải thích quy tắc chi phối và ba vai trò lựa chọn. Script 06 xuất các bảng `xgb_pareto_audit.csv`, `xgb_pareto_selected.csv`, `xgb_pareto_comparison.csv` và `xgb_pareto_checks.csv` vào `artifacts/tables/`.
