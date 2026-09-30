@@ -1,0 +1,166 @@
+{
+  "candidate_names": [
+    "pareto_auc",
+    "pareto_stability",
+    "pareto_balanced",
+    "tpe_best",
+    "xgb_default"
+  ],
+  "candidate_params_sha256": {
+    "pareto_auc": "b34bb52e4defbca328d5c6fe32f419179b041466d6c78e28352f2f7cd19bbe3c",
+    "pareto_balanced": "6bd9a8a570a1433642bba13057bcbc299cf6f08027b3178894ebb02271d4738d",
+    "pareto_stability": "ff7d06bc8cbd3e75576a696dea5ecc64cbc1552d3e1f79372d0043bec702fc74",
+    "tpe_best": "bf8120395f6baae6074145244a6c04a55490fc3b9514463506c71373c0c44ad8",
+    "xgb_default": "ce44e08a5ab02261c30b6a43f19ee9052462e787c55cc7103f46e40543f8cbc8"
+  },
+  "candidate_sources": {
+    "pareto_auc": {
+      "params": {
+        "colsample_bytree": 0.5,
+        "eval_metric": "logloss",
+        "gamma": 1.0,
+        "learning_rate": 0.0102392734111727,
+        "max_depth": 9,
+        "min_child_weight": 10,
+        "n_estimators": 550,
+        "n_jobs": -1,
+        "objective": "binary:logistic",
+        "random_state": 42,
+        "reg_alpha": 0.00037961668958,
+        "reg_lambda": 20.67840939783948,
+        "subsample": 0.75,
+        "tree_method": "hist"
+      },
+      "source_role": "auc",
+      "study_name": "xgb_auc_shap_nsgaii",
+      "trial": 44
+    },
+    "pareto_balanced": {
+      "params": {
+        "colsample_bytree": 0.5,
+        "eval_metric": "logloss",
+        "gamma": 3.5,
+        "learning_rate": 0.0102392734111727,
+        "max_depth": 9,
+        "min_child_weight": 11,
+        "n_estimators": 550,
+        "n_jobs": -1,
+        "objective": "binary:logistic",
+        "random_state": 42,
+        "reg_alpha": 0.00037961668958,
+        "reg_lambda": 20.67840939783948,
+        "subsample": 0.9,
+        "tree_method": "hist"
+      },
+      "source_role": "balanced",
+      "study_name": "xgb_auc_shap_nsgaii",
+      "trial": 61
+    },
+    "pareto_stability": {
+      "params": {
+        "colsample_bytree": 0.5,
+        "eval_metric": "logloss",
+        "gamma": 3.5,
+        "learning_rate": 0.0102392734111727,
+        "max_depth": 4,
+        "min_child_weight": 13,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "objective": "binary:logistic",
+        "random_state": 42,
+        "reg_alpha": 0.0048761365279611,
+        "reg_lambda": 20.67840939783948,
+        "subsample": 0.9,
+        "tree_method": "hist"
+      },
+      "source_role": "stability",
+      "study_name": "xgb_auc_shap_nsgaii",
+      "trial": 57
+    },
+    "tpe_best": {
+      "params": {
+        "colsample_bytree": 0.6,
+        "eval_metric": "logloss",
+        "gamma": 3.5,
+        "learning_rate": 0.0133561453267319,
+        "max_depth": 8,
+        "min_child_weight": 4,
+        "n_estimators": 550,
+        "n_jobs": -1,
+        "objective": "binary:logistic",
+        "random_state": 42,
+        "reg_alpha": 0.0030351499952641,
+        "reg_lambda": 6.150117320414774,
+        "subsample": 0.55,
+        "tree_method": "hist"
+      },
+      "source_role": "auc_best_tpe",
+      "study_name": "xgb_auc_tpe",
+      "trial": 50
+    },
+    "xgb_default": {
+      "params": {
+        "colsample_bytree": 1.0,
+        "eval_metric": "logloss",
+        "learning_rate": 0.1,
+        "max_depth": 6,
+        "n_estimators": 200,
+        "n_jobs": -1,
+        "random_state": 42,
+        "subsample": 1.0
+      },
+      "source_role": "default",
+      "study_name": "baseline",
+      "trial": -1
+    }
+  },
+  "completed_at_utc": "2026-09-30T18:50:04.087764+00:00",
+  "completed_model_fits": 5,
+  "completed_test_evaluations": 5,
+  "created_at_utc": "2026-09-30T18:50:03.756750+00:00",
+  "final_test_evaluated": true,
+  "final_test_fingerprint": "0adcaf99b7993555afb8906a3a3261545a1ede80b951c397ceee845d89517d53",
+  "hpo_protocol_fingerprint": "3053c59a3405d280a095a044b381542b81054a3e8310faaf37670753054aff8b",
+  "input_sha256": {
+    "artifacts/tables/xgb_sensitivity_manifest.json": "9f0bf1e8d2f9794468419e8859a58c762d5461178cf8eb7bb14318eca757cf8a",
+    "artifacts/tables/xgb_sensitivity_paired.csv": "fb224d90d9dbb88d1072da40a8f6908b8b57af0afde4113a0ccbd5dcd0136219",
+    "artifacts/tables/xgb_sensitivity_paired_summary.csv": "d9f5d850e9c802362f1532a92776f3801c3d4f417a946660fa320f4c0f7e9b20",
+    "artifacts/tables/xgb_sensitivity_repeats.csv": "7016509e2c633b672209c2425ddcfebc24b4b64aec3d9f144fed5416a601dd94",
+    "artifacts/tables/xgb_sensitivity_summary.csv": "840d3699133ebf5aca7c4df9d35ba405b66b373f30f89cf828b69eac961d63a6",
+    "configs/baseline.yaml": "3cfd4af28c810ab779af2fc37e0edbf500b73b53cc6a021838d79a6d8164001a",
+    "configs/data.yaml": "189a03bfeb9c1c7cb596472f0cea141de3b9c32680f27d847b4fd3e9ff732ff4",
+    "configs/final_test.yaml": "6bf72c4f3d574e2e76698af46def170bdac35eb3da4b5ce928c7e4afb2fdd500",
+    "data/raw/default_credit_card.csv": "f7b7d22d1f8dd27dadb25d4b78d8a4ae7c441ab6cc12d1ea58c0efc54d4d1788",
+    "data/splits/cv_folds.json": "a4d3e5168841a9bf00ccf19162eafa95bc68969f4dc6b18e9b1849bdf762b0b8",
+    "data/splits/outer_split.npz": "32f4d79b3bb2c36dbbf16004bacfe84b15d506dea70396b277ff64e2e3dfb0eb",
+    "data/splits/shap_reference_indices.npy": "0d17cbb5a10a2fffdfa48f2bed13e55c108ea9cdde99bcd50cf4da62f0eebd61",
+    "scripts/08_run_final_test.py": "ce1097bea243358a2917af95141a4a2d163d0e2e12fcfe7a5d987f1486de18fe",
+    "src/creditrisk/config.py": "59c0ab54d416e35a3e885effd733c41a1a5c55d49e1c1ddeb626cc9b9dc73f2b",
+    "src/creditrisk/data.py": "4b409560caa7ddc5352cb747de43b85fcc728b52e4a9db799fce14fb6ae226cb",
+    "src/creditrisk/final_test.py": "4ab2ddefca24fb021bd9273bcb55b532b072059ad230c842dd6bfddb82e5ecbf",
+    "src/creditrisk/metrics.py": "544bba1f54a31786200b7048960fd5d10cb84139a33aa4ea66c81b7ab0c9397a",
+    "src/creditrisk/models.py": "e0ab4194f3485fc0ef245249eb2e95f08130594bc6d20d65f3f68d52001e1164",
+    "src/creditrisk/preprocessing.py": "53c832095cc386637f9a5d9d6ea34daa42e2dcc3739388b948940bd64ccc2ee0",
+    "src/creditrisk/sensitivity.py": "583d558671fe97265df19e62bcdc6e3c2d8614b304e759b028d3e5c0d0a3ce92",
+    "src/creditrisk/splits.py": "14c34bbfe0cae046d6459a5fa5cb04c200a09af842bfa53cf6b66c2a4856a889"
+  },
+  "n_development": 24000,
+  "n_test": 6000,
+  "package_versions": {
+    "PyYAML": "6.0.3",
+    "numpy": "1.26.4",
+    "optuna": "5.0.0",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.15.3",
+    "xgboost": "3.2.0"
+  },
+  "planned_model_fits": 5,
+  "protocol_version": "held_out_test_v1",
+  "sensitivity_fingerprint": "fd2c1e6fd34cdaf8f9bb2e1f268bb0c7b381662e8799ef226b4a8008c1615b4c",
+  "shap_computed_on_test": false,
+  "status": "complete",
+  "summary_sha256": "046e18def975f88ba4aab955a221e7ba350a663d01dd1615018f01d928a39d04",
+  "test_used_for_selection": false,
+  "threshold": 0.5
+}

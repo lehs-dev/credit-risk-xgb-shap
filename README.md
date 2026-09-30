@@ -97,6 +97,11 @@ python scripts/06_verify_pareto.py
 python scripts/07_run_sensitivity.py --dry-run
 python scripts/07_run_sensitivity.py --smoke
 python scripts/07_run_sensitivity.py
+
+# Khóa đầu vào và đánh giá một lần trên Final Test sau khi đã cố định cấu hình
+python scripts/08_run_final_test.py --dry-run
+python scripts/08_run_final_test.py
+python scripts/08_run_final_test.py --verify
 ```
 
 ---
@@ -120,3 +125,5 @@ Bản nháp mục [2.9 về HPO](docs/chuong2_hpo_phuong_phap.md) mô tả TPE, 
 Bản nháp [mục 2.10–2.11 về Pareto và chọn nghiệm](docs/chuong2_pareto_phuong_phap.md) giải thích quy tắc chi phối và ba vai trò lựa chọn. Script 06 xuất các bảng `xgb_pareto_audit.csv`, `xgb_pareto_selected.csv`, `xgb_pareto_comparison.csv` và `xgb_pareto_checks.csv` vào `artifacts/tables/`.
 
 [Giao thức kiểm tra độ nhạy](docs/kiem_tra_do_nhay.md) giữ cố định ba nghiệm Pareto, nghiệm TPE tốt nhất và XGBoost mặc định. Script 07 đánh giá cùng năm cấu hình trên 10 cách chia 5 fold mới của Core (seeds 101–110), dùng chung tập tham chiếu SHAP; không dùng Final Test. `--dry-run` chỉ xác thực đầu vào, `--smoke` ghi kết quả riêng cho một cấu hình trên một seed. Lượt đầy đủ có thể tiếp tục từ các cặp seed/cấu hình đã lưu trong `artifacts/tables/`.
+
+[Giao thức đánh giá Final Test](docs/danh_gia_final_test.md) fit lại năm cấu hình đã khóa trên toàn bộ Development, rồi đo ROC-AUC và các chỉ số bổ sung một lần trên 6.000 quan sát Test. `--dry-run` chỉ kiểm tra đầu vào, không phân tích nhãn Test; sau lượt chấm, `--verify` xác thực artifact mà không fit lại hoặc chấm lại.

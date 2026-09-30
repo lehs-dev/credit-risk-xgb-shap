@@ -142,6 +142,7 @@ artifacts/tables/*
 !artifacts/tables/.gitkeep
 !artifacts/tables/*.csv
 !artifacts/tables/xgb_sensitivity_manifest.json
+!artifacts/tables/xgb_final_test_manifest.json
 artifacts/tables/xgb_sensitivity_smoke_*
 artifacts/figures/*
 !artifacts/figures/.gitkeep

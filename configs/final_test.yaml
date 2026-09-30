@@ -1,0 +1,16 @@
+# Locked, one-shot evaluation on the untouched 20% hold-out Test set.
+protocol_version: held_out_test_v1
+threshold: 0.5
+expected_samples:
+  total: 30000
+  development: 24000
+  test: 6000
+candidate_names: [pareto_auc, pareto_stability, pareto_balanced, tpe_best, xgb_default]
+required_sensitivity:
+  protocol_version: core_cv_resampling_v1
+  mode: full
+  status: complete
+  cv_seeds: [101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
+  completed_evaluations: 50
+  completed_model_fits: 250
+  final_test_evaluated: false
