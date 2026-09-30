@@ -1,0 +1,11 @@
+study_name: xgb_auc_shap_nsgaii
+storage_path: artifacts/optuna/hpo.sqlite3
+sampler_seed: 42
+main:
+  target_complete_trials: 64
+  max_attempts: 72
+  population_size: 16
+pilot:
+  target_complete_trials: 8
+  max_attempts: 12
+  population_size: 4

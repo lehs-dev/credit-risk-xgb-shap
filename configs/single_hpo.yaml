@@ -1,0 +1,11 @@
+study_name: xgb_auc_tpe
+storage_path: artifacts/optuna/hpo.sqlite3
+sampler_seed: 42
+main:
+  target_complete_trials: 64
+  max_attempts: 72
+  n_startup_trials: 16
+pilot:
+  target_complete_trials: 8
+  max_attempts: 12
+  n_startup_trials: 4

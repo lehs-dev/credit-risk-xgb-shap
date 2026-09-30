@@ -73,7 +73,7 @@ pip install -e . --no-deps --no-build-isolation
 # Khóa protocol phân chia mẫu (Outer Split 80/20, SHAP Reference Set, 5-Fold CV trên Core)
 ./run.sh split
 
-# Chạy toàn bộ bộ kiểm thử tự động (15 bài test chống rò rỉ và toán học)
+# Chạy toàn bộ bộ kiểm thử tự động (bộ kiểm thử chống rò rỉ và toán học)
 ./run.sh test
 
 # Chạy benchmark 6 mô hình đối chứng (Logistic Regression, RF, GBM, LightGBM, CatBoost, XGBoost)
@@ -81,6 +81,14 @@ pip install -e . --no-deps --no-build-isolation
 
 # Chạy thử hai mục tiêu của XGBoost mặc định trên cùng 5 fold Core
 .venv/bin/python scripts/03_run_xgb_default.py
+
+# Pilot riêng: 8 trial mỗi nhánh để đo thời gian (có cấu hình nhẹ và nặng)
+python scripts/04_run_single_hpo.py --pilot
+python scripts/05_run_multi_hpo.py --pilot
+
+# Lượt chính: 64 trial hoàn thành mỗi nhánh, tách khỏi pilot
+python scripts/04_run_single_hpo.py
+python scripts/05_run_multi_hpo.py
 ```
 
 ---
@@ -98,3 +106,5 @@ Bảng `artifacts/tables/baseline_benchmark.csv` được tạo lại bằng 5-f
 Dữ liệu đầu vào là bản CSV của [UCI Default of Credit Card Clients](https://archive.ics.uci.edu/dataset/350/default%2Bof%2Bcredit%2Bcard%2Bclients), đặt tại `data/raw/default_credit_card.csv` với cột nhãn `default.payment.next.month`.
 
 Bản nháp phương pháp tính SHAP và độ ổn định nằm tại [`docs/chuong2_phuong_phap_shap.md`](docs/chuong2_phuong_phap_shap.md).
+
+Bản nháp mục [2.9 về HPO](docs/chuong2_hpo_phuong_phap.md) mô tả TPE, NSGA-II, ngân sách và cách chọn Pareto. Mỗi trial ở cả hai nhánh đều fit 5 mô hình Core CV và tính SHAP trên cùng 1.000 quan sát tham chiếu; nhánh đơn mục tiêu chỉ đưa ROC-AUC vào sampler. SQLite lưu ở `artifacts/optuna/hpo.sqlite3`; các bảng trial, best/Pareto và manifest được xuất vào `artifacts/tables/`. Khi chạy lại cùng study, script chạy thêm đến đủ số trial `COMPLETE` đã cấu hình. Lịch sử trial được giữ, nhưng chuỗi đề xuất sau khi khởi tạo lại sampler có thể khác một lượt chạy liên tục.

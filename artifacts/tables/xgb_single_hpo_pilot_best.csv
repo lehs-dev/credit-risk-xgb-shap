@@ -1,0 +1,2 @@
+trial,state,roc_auc_cv,shap_stability,top_5_jaccard,fold_roc_auc,duration_seconds,n_model_fits,failure_type,failure_message,param_n_estimators,param_max_depth,param_learning_rate,param_min_child_weight,param_subsample,param_colsample_bytree,param_gamma,param_reg_alpha,param_reg_lambda
+5,COMPLETE,0.7830725255010831,0.8397233201581029,0.8,"[0.7718522763042237, 0.789883589363187, 0.7792195807678427, 0.7869311357047188, 0.7874760453654432]",4.995924,5,,,950,2,0.0310072504008906,1,0.95,0.8,0.5,0.3023674710988621,0.04104017605666964
