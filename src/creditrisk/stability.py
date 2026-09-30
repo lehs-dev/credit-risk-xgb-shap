@@ -1,7 +1,6 @@
 """Mathematical metrics for quantifying SHAP explanation stability."""
 
 from itertools import combinations
-from typing import List, Union
 import numpy as np
 from scipy.stats import rankdata, spearmanr
 
@@ -26,68 +25,50 @@ def calculate_global_shap_importance(shap_values: np.ndarray) -> np.ndarray:
     return np.mean(np.abs(shap_values), axis=0)
 
 
+def _validate_importance_matrix(importance_matrix: np.ndarray) -> np.ndarray:
+    matrix = np.asarray(importance_matrix, dtype=float)
+    if matrix.ndim != 2 or matrix.shape[0] < 2 or matrix.shape[1] < 2:
+        raise ValueError("Importance matrix must contain at least two runs and two features.")
+    if not np.isfinite(matrix).all():
+        raise ValueError("Importance matrix must contain only finite values.")
+    return matrix
+
+
 def compute_mean_spearman_rank_stability(importance_matrix: np.ndarray) -> float:
+    """Average pairwise Spearman correlation of global importance rankings.
+
+    SciPy assigns average ranks to tied values. A constant importance vector
+    has no defined rank correlation, so pairs containing one score 0 rather
+    than being treated as perfectly stable.
     """
-    Compute average pairwise Spearman rank correlation across R repeated runs.
-    S(theta) = 2 / [R * (R - 1)] * sum_{a < b} rho_s(I^(a), I^(b))
-
-    Parameters
-    ----------
-    importance_matrix : np.ndarray
-        Array of shape (R, M) where R is number of repeated runs and M is number of features.
-
-    Returns
-    -------
-    float
-        Average Spearman rank correlation in [-1, 1]. Value close to 1 means highly stable.
-    """
-    R, M = importance_matrix.shape
-    if R < 2:
-        raise ValueError("At least 2 repeated runs are required to compute stability.")
-
+    matrix = _validate_importance_matrix(importance_matrix)
     correlations = []
-    for a, b in combinations(range(R), 2):
-        corr, _ = spearmanr(importance_matrix[a], importance_matrix[b])
-        # Handle constant ranking edge case
-        if np.isnan(corr):
-            corr = 0.0
-        correlations.append(corr)
-
+    for a, b in combinations(range(matrix.shape[0]), 2):
+        if np.all(matrix[a] == matrix[a, 0]) or np.all(matrix[b] == matrix[b, 0]):
+            correlations.append(0.0)
+        else:
+            correlations.append(float(spearmanr(matrix[a], matrix[b]).statistic))
     return float(np.mean(correlations))
 
 
 def compute_top_k_jaccard_stability(importance_matrix: np.ndarray, k: int = 5) -> float:
-    """
-    Compute average pairwise Jaccard similarity of the top-k most important features across R runs.
-    J(A, B) = |A cap B| / |A cup B|
+    """Mean pairwise top-k Jaccard, breaking boundary ties by feature order."""
+    matrix = _validate_importance_matrix(importance_matrix)
+    n_features = matrix.shape[1]
+    if not 1 <= k <= n_features:
+        raise ValueError(f"k must be between 1 and {n_features}, got {k}")
 
-    Parameters
-    ----------
-    importance_matrix : np.ndarray
-        Shape (R, M) of feature importances across R runs.
-    k : int
-        Top-k features to compare (default: 5).
-
-    Returns
-    -------
-    float
-        Average Jaccard index in [0, 1].
-    """
-    R, M = importance_matrix.shape
-    if R < 2:
-        raise ValueError("At least 2 repeated runs are required.")
-    if k > M or k <= 0:
-        raise ValueError(f"k must be between 1 and {M}, got {k}")
-
-    # For each run, get set of indices of top-k features (highest importance)
-    top_k_sets = [set(np.argsort(importance_matrix[r])[-k:]) for r in range(R)]
-
+    feature_order = np.arange(n_features)
+    top_k_sets = [
+        set(np.lexsort((feature_order, -row))[:k]) for row in matrix
+    ]
     jaccards = []
-    for a, b in combinations(range(R), 2):
-        set_a, set_b = top_k_sets[a], top_k_sets[b]
-        jaccard = len(set_a.intersection(set_b)) / len(set_a.union(set_b))
-        jaccards.append(jaccard)
-
+    for a, b in combinations(range(matrix.shape[0]), 2):
+        if np.all(matrix[a] == matrix[a, 0]) or np.all(matrix[b] == matrix[b, 0]):
+            jaccards.append(0.0)
+            continue
+        first, second = top_k_sets[a], top_k_sets[b]
+        jaccards.append(len(first.intersection(second)) / len(first.union(second)))
     return float(np.mean(jaccards))
 
 

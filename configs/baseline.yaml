@@ -9,7 +9,7 @@ experiment:
   metrics:
     primary: "roc_auc"
     supplementary:
-      - "pr_auc"
+      - "average_precision"
       - "f1"
       - "precision"
       - "recall"

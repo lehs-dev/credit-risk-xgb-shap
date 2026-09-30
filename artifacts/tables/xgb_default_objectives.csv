@@ -1,0 +1,2 @@
+model,roc_auc_cv,roc_auc_cv_std,shap_stability,top_5_jaccard,n_repeats,n_reference,model_seed,shap_output,shap_feature_perturbation,stability_variation
+xgboost_default,0.7726202122933872,0.007095700343461652,0.8160079051383399,0.8666666666666668,5,1000,42,raw_log_odds_margin,tree_path_dependent,five_fixed_core_cv_training_subsets

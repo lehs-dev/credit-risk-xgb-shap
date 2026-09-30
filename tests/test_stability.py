@@ -88,3 +88,14 @@ def test_kendall_w_concordance():
     )
     w = compute_kendall_w(matrix)
     assert np.isclose(w, 1.0)
+
+
+def test_constant_importance_is_not_perfect_stability():
+    matrix = np.zeros((3, 4))
+    assert compute_mean_spearman_rank_stability(matrix) == 0.0
+    assert compute_top_k_jaccard_stability(matrix, k=2) == 0.0
+
+
+def test_top_k_tie_uses_fixed_feature_order():
+    matrix = np.array([[1.0, 1.0, 0.0], [2.0, 2.0, 0.0]])
+    assert compute_top_k_jaccard_stability(matrix, k=1) == 1.0

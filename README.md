@@ -40,7 +40,8 @@ credit-risk-xgb-shap/
 ├── scripts/                  # Scripts thực thi từng giai đoạn
 │   ├── 00_prepare_data.py    # Kiểm định dữ liệu thô
 │   ├── 01_make_splits.py     # Sinh các tập split cố định
-│   └── 02_run_baselines.py   # Benchmark 6 mô hình baseline
+│   ├── 02_run_baselines.py   # Benchmark 6 mô hình baseline
+│   └── 03_run_xgb_default.py # ROC-AUC và SHAP stability của XGBoost mặc định
 ├── artifacts/                # Kết quả thí nghiệm, models, bảng, figures
 ├── tests/                    # Bộ kiểm thử tự động (anti-leakage, splits, stability)
 ├── pyproject.toml            # Cấu hình đóng gói package & pytest
@@ -77,6 +78,9 @@ pip install -e . --no-deps --no-build-isolation
 
 # Chạy benchmark 6 mô hình đối chứng (Logistic Regression, RF, GBM, LightGBM, CatBoost, XGBoost)
 ./run.sh baseline
+
+# Chạy thử hai mục tiêu của XGBoost mặc định trên cùng 5 fold Core
+.venv/bin/python scripts/03_run_xgb_default.py
 ```
 
 ---
@@ -92,3 +96,5 @@ pip install -e . --no-deps --no-build-isolation
 Bảng `artifacts/tables/baseline_benchmark.csv` được tạo lại bằng 5-fold CV trên Core. Cột `average_precision` là Average Precision (AP), không phải diện tích đường Precision–Recall tính bằng quy tắc hình thang.
 
 Dữ liệu đầu vào là bản CSV của [UCI Default of Credit Card Clients](https://archive.ics.uci.edu/dataset/350/default%2Bof%2Bcredit%2Bcard%2Bclients), đặt tại `data/raw/default_credit_card.csv` với cột nhãn `default.payment.next.month`.
+
+Bản nháp phương pháp tính SHAP và độ ổn định nằm tại [`docs/chuong2_phuong_phap_shap.md`](docs/chuong2_phuong_phap_shap.md).
