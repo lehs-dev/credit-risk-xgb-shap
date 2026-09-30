@@ -21,8 +21,8 @@ from creditrisk.splits import load_splits
 def run_cv_for_model(
     model_name: str,
     model_cfg: dict,
-    X_dev: pd.DataFrame,
-    y_dev: pd.Series,
+    X_core: pd.DataFrame,
+    y_core: pd.Series,
     cv_folds: list,
     data_config,
 ) -> dict:
@@ -36,8 +36,8 @@ def run_cv_for_model(
         train_idx = fold_info["train_indices"]
         val_idx = fold_info["val_indices"]
 
-        X_train, y_train = X_dev.loc[train_idx], y_dev.loc[train_idx]
-        X_val, y_val = X_dev.loc[val_idx], y_dev.loc[val_idx]
+        X_train, y_train = X_core.loc[train_idx], y_core.loc[train_idx]
+        X_val, y_val = X_core.loc[val_idx], y_core.loc[val_idx]
 
         # Fit preprocessor strictly on train fold
         preprocessor = CreditRiskPreprocessor(
@@ -83,13 +83,13 @@ def main():
     X, y = extract_features_and_target(df_raw, config=data_config)
 
     splits = load_splits(data_config.splits_dir)
-    dev_idx = splits["dev_indices"]
+    core_idx = splits["core_indices"]
     cv_folds = splits["cv_folds"]
 
-    X_dev = X.loc[dev_idx]
-    y_dev = y.loc[dev_idx]
+    X_core = X.loc[core_idx]
+    y_core = y.loc[core_idx]
 
-    print(f"Development Set: {len(X_dev):,} samples across {len(cv_folds)} folds.")
+    print(f"Core: {len(X_core):,} samples across {len(cv_folds)} folds.")
 
     # 2. Benchmark each model
     results = []
@@ -102,13 +102,13 @@ def main():
 
         print(f"\nEvaluating: {model_name}...")
         start_time = datetime.now()
-        res = run_cv_for_model(model_name, model_cfg, X_dev, y_dev, cv_folds, data_config)
+        res = run_cv_for_model(model_name, model_cfg, X_core, y_core, cv_folds, data_config)
         elapsed = (datetime.now() - start_time).total_seconds()
         res["duration_sec"] = elapsed
         results.append(res)
         print(
             f"   -> ROC-AUC: {res['roc_auc_mean']:.4f} ± {res['roc_auc_std']:.4f} "
-            f"| PR-AUC: {res['pr_auc_mean']:.4f} ± {res['pr_auc_std']:.4f} ({elapsed:.1f}s)"
+            f"| AP: {res['average_precision_mean']:.4f} ± {res['average_precision_std']:.4f} ({elapsed:.1f}s)"
         )
 
     # 3. Format and save results
@@ -127,8 +127,8 @@ def main():
         "model",
         "roc_auc_mean",
         "roc_auc_std",
-        "pr_auc_mean",
-        "pr_auc_std",
+        "average_precision_mean",
+        "average_precision_std",
         "f1_mean",
         "balanced_accuracy_mean",
         "duration_sec",

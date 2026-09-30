@@ -21,7 +21,7 @@ def compute_classification_metrics(
     """
     Compute comprehensive set of classification metrics for credit scoring.
     Primary objective: ROC-AUC.
-    Supplementary metrics: PR-AUC, F1, Precision, Recall, Balanced Accuracy, Brier Score.
+    Supplementary metrics: Average Precision (AP), F1, Precision, Recall, Balanced Accuracy, Brier Score.
 
     Parameters
     ----------
@@ -43,7 +43,7 @@ def compute_classification_metrics(
 
     return {
         "roc_auc": float(roc_auc_score(y_true, y_prob)),
-        "pr_auc": float(average_precision_score(y_true, y_prob)),
+        "average_precision": float(average_precision_score(y_true, y_prob)),
         "f1": float(f1_score(y_true, y_pred, zero_division=0)),
         "precision": float(precision_score(y_true, y_pred, zero_division=0)),
         "recall": float(recall_score(y_true, y_pred, zero_division=0)),

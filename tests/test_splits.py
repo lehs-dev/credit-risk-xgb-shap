@@ -9,6 +9,7 @@ import pytest
 from creditrisk.config import DataConfig
 from creditrisk.splits import (
     load_splits,
+    make_core_indices,
     make_cv_folds,
     make_outer_split,
     sample_shap_reference,
@@ -58,29 +59,35 @@ def test_outer_split_disjoint_and_stratified(mock_dataset):
 
 def test_cv_folds_partition_and_disjoint(mock_dataset):
     target_col = "default.payment.next.month"
-    dev_idx, _ = make_outer_split(mock_dataset, target_col=target_col, test_size=0.20, random_state=42)
+    dev_idx, test_idx = make_outer_split(
+        mock_dataset, target_col=target_col, test_size=0.20, random_state=42
+    )
     df_dev = mock_dataset.loc[dev_idx]
+    ref_idx = sample_shap_reference(df_dev, target_col=target_col, n_samples=100, random_state=42)
+    core_idx = make_core_indices(dev_idx, ref_idx)
+    df_core = mock_dataset.loc[core_idx]
 
-    folds = make_cv_folds(df_dev, target_col=target_col, n_splits=5, random_state=42)
+    folds = make_cv_folds(df_core, target_col=target_col, n_splits=5, random_state=42)
 
     assert len(folds) == 5
+    assert set(core_idx).isdisjoint(ref_idx)
+    assert set(core_idx).union(ref_idx) == set(dev_idx)
     all_val_indices = []
 
     for f in folds:
         train_set = set(f["train_indices"])
         val_set = set(f["val_indices"])
 
-        # Train and val in each fold are disjoint
-        assert len(train_set.intersection(val_set)) == 0
-
-        # Union covers all dev indices
-        assert train_set.union(val_set) == set(df_dev.index)
-
+        assert train_set.isdisjoint(val_set)
+        assert train_set.union(val_set) == set(core_idx)
+        assert train_set.isdisjoint(ref_idx)
+        assert val_set.isdisjoint(ref_idx)
+        assert train_set.isdisjoint(test_idx)
+        assert val_set.isdisjoint(test_idx)
         all_val_indices.extend(f["val_indices"])
 
-    # Across all folds, each sample is validated exactly once
-    assert len(all_val_indices) == len(df_dev)
-    assert len(set(all_val_indices)) == len(df_dev)
+    assert len(all_val_indices) == len(core_idx)
+    assert len(set(all_val_indices)) == len(core_idx)
 
 
 def test_shap_reference_strictly_from_dev(mock_dataset):
@@ -101,8 +108,9 @@ def test_save_and_load_splits_roundtrip(mock_dataset, tmp_path):
     target_col = "default.payment.next.month"
     dev_idx, test_idx = make_outer_split(mock_dataset, target_col=target_col, test_size=0.20, random_state=42)
     df_dev = mock_dataset.loc[dev_idx]
-    folds = make_cv_folds(df_dev, target_col=target_col, n_splits=5, random_state=42)
     ref_idx = sample_shap_reference(df_dev, target_col=target_col, n_samples=100, random_state=42)
+    core_idx = make_core_indices(dev_idx, ref_idx)
+    folds = make_cv_folds(mock_dataset.loc[core_idx], target_col=target_col, n_splits=5, random_state=42)
 
     save_splits(
         output_dir=tmp_path,
@@ -114,6 +122,26 @@ def test_save_and_load_splits_roundtrip(mock_dataset, tmp_path):
 
     loaded = load_splits(tmp_path)
     np.testing.assert_array_equal(loaded["dev_indices"], dev_idx)
+    np.testing.assert_array_equal(loaded["core_indices"], core_idx)
     np.testing.assert_array_equal(loaded["test_indices"], test_idx)
     np.testing.assert_array_equal(loaded["shap_reference_indices"], ref_idx)
     assert len(loaded["cv_folds"]) == 5
+
+
+def test_reject_cv_folds_containing_shap_reference(mock_dataset, tmp_path):
+    target_col = "default.payment.next.month"
+    dev_idx, test_idx = make_outer_split(
+        mock_dataset, target_col=target_col, test_size=0.20, random_state=42
+    )
+    df_dev = mock_dataset.loc[dev_idx]
+    ref_idx = sample_shap_reference(df_dev, target_col=target_col, n_samples=100, random_state=42)
+    old_folds = make_cv_folds(df_dev, target_col=target_col, n_splits=5, random_state=42)
+
+    with pytest.raises(ValueError, match="partition Core"):
+        save_splits(
+            output_dir=tmp_path,
+            dev_indices=dev_idx,
+            test_indices=test_idx,
+            cv_folds=old_folds,
+            shap_reference_indices=ref_idx,
+        )

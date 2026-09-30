@@ -6,14 +6,10 @@ VENV_PYTEST=".venv/bin/pytest"
 
 case "$1" in
   data)
-    mkdir -p data/raw
-    if [ -f "../data-set /UCI_Credit_Card.csv" ]; then
-      cp "../data-set /UCI_Credit_Card.csv" data/raw/default_credit_card.csv
-      echo "[SUCCESS] Copied dataset to data/raw/default_credit_card.csv"
-    elif [ -f "data/raw/default_credit_card.csv" ]; then
-      echo "[INFO] data/raw/default_credit_card.csv already exists."
+    if [ -f "data/raw/default_credit_card.csv" ]; then
+      echo "[INFO] Using data/raw/default_credit_card.csv"
     else
-      echo "[ERROR] UCI_Credit_Card.csv not found in ../data-set /"; exit 1
+      echo "[ERROR] Place your UCI CSV at data/raw/default_credit_card.csv"; exit 1
     fi
     ;;
   prepare)

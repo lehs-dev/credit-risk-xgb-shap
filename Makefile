@@ -8,9 +8,9 @@ PYTEST ?= $(VENV)/bin/pytest
 help:
 	@echo "Available commands:"
 	@echo "  make install   - Install required packages into $(VENV)"
-	@echo "  make data      - Ingest raw dataset into data/raw/"
+	@echo "  make data      - Check the existing CSV in data/raw/"
 	@echo "  make prepare   - Validate raw dataset & print summary statistics"
-	@echo "  make split     - Generate outer 80/20 split, 5-fold CV and SHAP reference set"
+	@echo "  make split     - Generate 80/20 split, SHAP reference and 5-fold CV on Core"
 	@echo "  make baseline  - Run 6 baseline models benchmark"
 	@echo "  make test      - Run automated unit and anti-leakage tests"
 	@echo "  make clean     - Remove Python bytecode and test cache files"
@@ -20,14 +20,10 @@ install:
 	$(PIP) install -r requirements.txt
 
 data:
-	@mkdir -p data/raw
-	@if [ -f "../data-set /UCI_Credit_Card.csv" ]; then \
-		cp "../data-set /UCI_Credit_Card.csv" data/raw/default_credit_card.csv; \
-		echo "Dataset successfully copied to data/raw/default_credit_card.csv"; \
-	elif [ -f "data/raw/default_credit_card.csv" ]; then \
-		echo "data/raw/default_credit_card.csv already exists."; \
+	@if [ -f "data/raw/default_credit_card.csv" ]; then \
+		echo "Using data/raw/default_credit_card.csv"; \
 	else \
-		echo "Error: UCI_Credit_Card.csv not found in ../data-set /"; exit 1; \
+		echo "Place your UCI CSV at data/raw/default_credit_card.csv"; exit 1; \
 	fi
 
 prepare: data

@@ -34,7 +34,7 @@ credit-risk-xgb-shap/
 │   ├── preprocessing.py      # Pipeline tiền xử lý chống rò rỉ (no-leakage)
 │   ├── splits.py             # Phân chia mẫu và trích xuất SHAP reference set
 │   ├── models.py             # Model factory (LR, RF, GBM, LightGBM, CatBoost, XGBoost)
-│   ├── metrics.py            # Tính ROC-AUC, PR-AUC, F1, Balanced Accuracy...
+│   ├── metrics.py            # Tính ROC-AUC, AP, F1, Balanced Accuracy...
 │   ├── stability.py          # Thước đo Spearman, Jaccard, Kendall's W cho SHAP
 │   └── utils.py              # Tiện ích logging, timer, seeding
 ├── scripts/                  # Scripts thực thi từng giai đoạn
@@ -63,16 +63,16 @@ pip install -e . --no-deps --no-build-isolation
 ### 2. Các lệnh thực thi nhanh (qua `./run.sh` hoặc `make`)
 
 ```bash
-# Nạp và sao chép dữ liệu thô vào data/raw/
+# Dùng dữ liệu đã đặt trong data/raw/default_credit_card.csv
 ./run.sh data
 
 # Kiểm định dữ liệu thô và xuất tóm tắt thống kê
 ./run.sh prepare
 
-# Khóa protocol phân chia mẫu (Outer Split 80/20, 5-Fold CV, SHAP Reference Set)
+# Khóa protocol phân chia mẫu (Outer Split 80/20, SHAP Reference Set, 5-Fold CV trên Core)
 ./run.sh split
 
-# Chạy toàn bộ bộ kiểm thử tự động (14 bài test chống rò rỉ và toán học)
+# Chạy toàn bộ bộ kiểm thử tự động (15 bài test chống rò rỉ và toán học)
 ./run.sh test
 
 # Chạy benchmark 6 mô hình đối chứng (Logistic Regression, RF, GBM, LightGBM, CatBoost, XGBoost)
@@ -84,6 +84,11 @@ pip install -e . --no-deps --no-build-isolation
 ## 🔒 Giao thức Chống Rò Rỉ (Strict Anti-Leakage Protocol)
 
 1. **Outer Split**: Tách riêng 20% Final Test set ($N=6.000$) độc lập tuyệt đối. Không sử dụng cho bất kỳ bước tuning nào.
-2. **Development Set**: 80% ($N=24.000$) được dùng cho 5-Fold Stratified Cross Validation.
-3. **SHAP Reference Set**: 1.000 mẫu được trích xuất phân tầng từ Development Set và cố định xuyên suốt mọi trial HPO.
-4. **Cô lập Fit/Transform**: Các phép chuẩn hóa scaler và encoder chỉ được fit trên fold train và transform trên fold validation/test.
+2. **Development Set**: 80% ($N=24.000$) được chia thành Core và SHAP Reference Set rời nhau.
+3. **SHAP Reference Set**: 1.000 mẫu được trích xuất phân tầng từ Development Set (seed 42) và giữ cố định để tính SHAP; không tham gia huấn luyện hoặc validation.
+4. **Core Set**: 23.000 mẫu còn lại được dùng cho 5-Fold Stratified Cross Validation. Mỗi fold chỉ chứa các chỉ số của Core.
+5. **Cô lập Fit/Transform**: Scaler và encoder chỉ được fit trên phần huấn luyện của từng fold, sau đó transform phần validation hoặc test.
+
+Bảng `artifacts/tables/baseline_benchmark.csv` được tạo lại bằng 5-fold CV trên Core. Cột `average_precision` là Average Precision (AP), không phải diện tích đường Precision–Recall tính bằng quy tắc hình thang.
+
+Dữ liệu đầu vào là bản CSV của [UCI Default of Credit Card Clients](https://archive.ics.uci.edu/dataset/350/default%2Bof%2Bcredit%2Bcard%2Bclients), đặt tại `data/raw/default_credit_card.csv` với cột nhãn `default.payment.next.month`.

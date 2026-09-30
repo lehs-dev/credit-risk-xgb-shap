@@ -7,8 +7,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 
-from creditrisk.config import DataConfig, load_data_config
-
 
 def make_outer_split(
     df: pd.DataFrame,
@@ -50,18 +48,18 @@ def make_outer_split(
 
 
 def make_cv_folds(
-    df_dev: pd.DataFrame,
+    df_core: pd.DataFrame,
     target_col: str = "default.payment.next.month",
     n_splits: int = 5,
     random_state: int = 42,
 ) -> List[Dict[str, Any]]:
     """
-    Generate fixed stratified K-fold cross-validation splits on the development set.
+    Generate fixed stratified K-fold cross-validation splits on the Core set.
 
     Parameters
     ----------
-    df_dev : pd.DataFrame
-        Development set subset.
+    df_core : pd.DataFrame
+        Core set subset.
     target_col : str
         Target column name.
     n_splits : int
@@ -75,12 +73,12 @@ def make_cv_folds(
         List of dicts containing fold index, train_indices, and val_indices.
     """
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
-    y_dev = df_dev[target_col].values
+    y_core = df_core[target_col].values
 
     folds = []
-    for fold_idx, (train_pos, val_pos) in enumerate(skf.split(df_dev, y_dev)):
-        train_indices = df_dev.index.values[train_pos].tolist()
-        val_indices = df_dev.index.values[val_pos].tolist()
+    for fold_idx, (train_pos, val_pos) in enumerate(skf.split(df_core, y_core)):
+        train_indices = df_core.index.values[train_pos].tolist()
+        val_indices = df_core.index.values[val_pos].tolist()
         folds.append(
             {
                 "fold": int(fold_idx),
@@ -134,6 +132,57 @@ def sample_shap_reference(
     return df_dev.index.values[ref_pos]
 
 
+def make_core_indices(dev_indices: np.ndarray, shap_reference_indices: np.ndarray) -> np.ndarray:
+    """Return Development indices excluding SHAP reference, preserving order."""
+    dev_indices = np.asarray(dev_indices)
+    shap_reference_indices = np.asarray(shap_reference_indices)
+
+    if len(np.unique(dev_indices)) != len(dev_indices):
+        raise ValueError("Development indices contain duplicates.")
+    if len(np.unique(shap_reference_indices)) != len(shap_reference_indices):
+        raise ValueError("SHAP reference indices contain duplicates.")
+    if not np.isin(shap_reference_indices, dev_indices).all():
+        raise ValueError("SHAP reference indices must belong to Development.")
+
+    core_indices = dev_indices[~np.isin(dev_indices, shap_reference_indices)]
+    if len(core_indices) == 0:
+        raise ValueError("Core must contain at least one observation.")
+    return core_indices
+
+
+def validate_split_protocol(
+    dev_indices: np.ndarray,
+    test_indices: np.ndarray,
+    cv_folds: List[Dict[str, Any]],
+    shap_reference_indices: np.ndarray,
+) -> np.ndarray:
+    """Check that Test and SHAP reference never enter Core CV folds."""
+    core_indices = make_core_indices(dev_indices, shap_reference_indices)
+    dev_set = set(dev_indices)
+    test_set = set(test_indices)
+    core_set = set(core_indices)
+
+    if len(test_set) != len(test_indices) or dev_set.intersection(test_set):
+        raise ValueError("Development and Test indices must be unique and disjoint.")
+
+    validation_indices = []
+    for fold in cv_folds:
+        train_indices = fold["train_indices"]
+        val_indices = fold["val_indices"]
+        train_set = set(train_indices)
+        val_set = set(val_indices)
+        if len(train_set) != len(train_indices) or len(val_set) != len(val_indices):
+            raise ValueError("CV fold indices must be unique.")
+        if train_set.intersection(val_set) or train_set.union(val_set) != core_set:
+            raise ValueError("Every CV fold must partition Core, excluding SHAP reference.")
+        validation_indices.extend(val_indices)
+
+    if len(validation_indices) != len(core_indices) or set(validation_indices) != core_set:
+        raise ValueError("CV validation folds must cover Core exactly once.")
+
+    return core_indices
+
+
 def save_splits(
     output_dir: Union[str, Path],
     dev_indices: np.ndarray,
@@ -143,6 +192,7 @@ def save_splits(
     metadata: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Save all split artifacts to directory."""
+    validate_split_protocol(dev_indices, test_indices, cv_folds, shap_reference_indices)
     out_path = Path(output_dir)
     out_path.mkdir(parents=True, exist_ok=True)
 
@@ -173,7 +223,8 @@ def load_splits(splits_dir: Union[str, Path] = "data/splits") -> Dict[str, Any]:
     Returns
     -------
     Dict[str, Any]
-        Dictionary with keys: 'dev_indices', 'test_indices', 'cv_folds', 'shap_reference_indices'.
+        Dictionary with keys: 'dev_indices', 'test_indices', 'core_indices',
+        'cv_folds', and 'shap_reference_indices'.
     """
     path = Path(splits_dir)
 
@@ -189,9 +240,14 @@ def load_splits(splits_dir: Union[str, Path] = "data/splits") -> Dict[str, Any]:
         cv_folds = json.load(f)
     shap_ref = np.load(shap_file)
 
+    core_indices = validate_split_protocol(
+        outer["dev_indices"], outer["test_indices"], cv_folds, shap_ref
+    )
+
     return {
         "dev_indices": outer["dev_indices"],
         "test_indices": outer["test_indices"],
+        "core_indices": core_indices,
         "cv_folds": cv_folds,
         "shap_reference_indices": shap_ref,
     }

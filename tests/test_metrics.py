@@ -13,7 +13,7 @@ def test_compute_metrics_perfect_predictions():
     metrics = compute_classification_metrics(y_true, y_prob)
 
     assert metrics["roc_auc"] == 1.0
-    assert metrics["pr_auc"] == 1.0
+    assert metrics["average_precision"] == 1.0
     assert metrics["f1"] == 1.0
     assert metrics["precision"] == 1.0
     assert metrics["recall"] == 1.0
@@ -28,7 +28,7 @@ def test_compute_metrics_imbalanced_edge_case():
     metrics = compute_classification_metrics(y_true, y_prob)
 
     assert "roc_auc" in metrics
-    assert "pr_auc" in metrics
+    assert "average_precision" in metrics
     assert "f1" in metrics
     assert "balanced_accuracy" in metrics
     assert 0.0 <= metrics["roc_auc"] <= 1.0
