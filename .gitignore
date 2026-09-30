@@ -141,6 +141,8 @@ artifacts/logs/*
 artifacts/tables/*
 !artifacts/tables/.gitkeep
 !artifacts/tables/*.csv
+!artifacts/tables/xgb_sensitivity_manifest.json
+artifacts/tables/xgb_sensitivity_smoke_*
 artifacts/figures/*
 !artifacts/figures/.gitkeep
 # Bỏ comment nếu muốn lưu lại figure / table báo cáo cuối cùng:

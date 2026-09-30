@@ -1,0 +1,18 @@
+# Locked Development-only sensitivity analysis. Do not reselect configurations.
+protocol_version: core_cv_resampling_v1
+cv_seeds: [101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
+n_splits: 5
+top_k: 5
+model_random_state: 42
+expected_samples:
+  development: 24000
+  core: 23000
+  shap_reference: 1000
+  final_test: 6000
+candidate_trials:
+  pareto_auc: 44
+  pareto_stability: 57
+  pareto_balanced: 61
+  tpe_best: 50
+  xgb_default: null
+comparators: [tpe_best, xgb_default]
