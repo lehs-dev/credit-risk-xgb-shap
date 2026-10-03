@@ -102,7 +102,54 @@ python scripts/07_run_sensitivity.py
 python scripts/08_run_final_test.py --dry-run
 python scripts/08_run_final_test.py
 python scripts/08_run_final_test.py --verify
+
+# Sinh hình PNG 300 DPI và PDF vector từ các kết quả đã lưu
+./run.sh figures
+
+# Thực thi notebook 04–06; lưu bản có outputs trong artifacts/notebooks/
+./run.sh notebooks
 ```
+
+### 3. Thực hành và báo cáo Chương 3
+
+[Báo cáo Chương 3](docs/chuong3_ket_qua_thuc_nghiem.md) trình bày đủ các mục
+3.1–3.15 và đối chiếu RQ1–RQ4 với kết quả đã lưu. Ba notebook tiếp nối phần
+chuẩn bị dữ liệu:
+
+- [04 — Baseline benchmarking](notebooks/04_baseline_benchmarking.ipynb): bảng đa chỉ số,
+  sai số giữa fold và chi phí benchmark của sáu mô hình.
+- [05 — XGBoost HPO và Pareto](notebooks/05_xgb_hpo_and_pareto_analysis.ipynb): lịch sử
+  TPE/NSGA-II, ảnh hưởng siêu tham số mang tính thăm dò, kiểm toán front và chọn nghiệm.
+- [06 — Độ nhạy và Final Test](notebooks/06_sensitivity_and_final_evaluation.ipynb):
+  so sánh ghép cặp, kiểm định có hiệu chỉnh Holm, ma trận nhầm lẫn và SHAP Reference.
+
+`make figures` và `make notebooks` tương đương hai lệnh trên. Nếu không có
+`.venv/bin/python`, các lệnh dùng `python3`; đặt `PYTHON=/path/to/python` để chọn
+interpreter. Cài các phụ thuộc notebook bằng `pip install -r requirements.txt`
+hoặc `pip install -e '.[notebooks]'`. Notebook executor tạo kernel bằng chính
+interpreter đang chạy, không cần đăng ký kernel thủ công. Thêm `--inplace` khi
+gọi `python scripts/10_execute_notebooks.py` nếu cần lưu outputs vào notebook gốc.
+
+Các lệnh phân tích Chương 3 đọc artifacts, không huấn luyện lại các mô hình
+tín dụng hoặc chấm lại Final Test. Notebook 05 fit một mô hình thay thế nhẹ trên
+**bảng trial HPO** để khảo sát permutation importance; đây là phân tích thăm dò,
+không phải một lượt HPO hay ước lượng tác động nhân quả. Executor kiểm tra hashes
+đầu vào trước và sau khi chạy. Kết quả notebook thực thi được lưu riêng trong
+`artifacts/notebooks/` để giữ notebook nguồn gọn và dễ rà soát.
+
+Bộ hình được tạo bởi `scripts/09_generate_figures.py` và
+`src/creditrisk/visualization.py` trong `artifacts/figures/`; manifest ghi nguồn
+dữ liệu và các giới hạn của từng hình. Hiện chỉ lưu SHAP toàn cục qua năm fold
+cho XGBoost mặc định tại `artifacts/shap/xgb_default_importance_by_fold.csv`.
+Chưa lưu xác suất dự đoán OOF/Final Test hoặc SHAP cho các cấu hình tối ưu.
+Vì vậy Hình 04 mô tả SHAP trên Reference của cấu hình mặc định; Hình 06 dùng
+các chỉ số và ma trận nhầm lẫn thật, ghi rõ ROC/PR chưa khả dụng. Hình 07 kết nối
+AUC Core CV với AUC Test và chỉ dùng stability đo trên Development.
+
+Để bổ sung ROC/PR trong một **thực nghiệm tương lai** cần lưu nhãn và xác suất
+theo quan sát ngay trong lượt chấm đã khóa; không chạy lại Final Test hiện tại
+để phục hồi dữ liệu bị thiếu. Các sai số qua fold/seed và kiểm định trên cùng
+Core mô tả độ nhạy với phân hoạch, không xác lập ưu thế trên quần thể bên ngoài.
 
 ---
 

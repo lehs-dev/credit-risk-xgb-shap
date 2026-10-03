@@ -1,0 +1,114 @@
+{
+  "created_at_utc": "2026-10-03T09:09:35.582024+00:00",
+  "protocol": "artifact_only_no_fitting_no_test_inference",
+  "png_dpi": 300,
+  "pdf_vector_text": true,
+  "test_re_evaluated": false,
+  "sources": {
+    "artifacts/tables/baseline_benchmark.csv": "547ffada77f35245a837b2d25259738cd41adee50d1bd3d4355e36fce3ae4b24",
+    "artifacts/tables/xgb_multi_hpo_trials.csv": "b02cf3d9fcef14b19197027b885fa6292ce24f11b76cc705c7eede24e4be4268",
+    "artifacts/tables/xgb_multi_hpo_pareto.csv": "8e7a4423c152403473436da8101c804d2d9000ce7e022bcf57b4913dabe571ed",
+    "artifacts/tables/xgb_pareto_selected.csv": "ea0f47c3203c75421731637400282b648568f81bd6a674dd779415e6b7ac78a1",
+    "artifacts/tables/xgb_single_hpo_best.csv": "2bac22b9af4cad3deb362d15667931fbd3f6290247cc9267bfc08da5e1cad5e9",
+    "artifacts/tables/xgb_default_objectives.csv": "e8507a4202beb6a4991d5c227d334ea638dce1c59c9c4f7a3225913006c4b901",
+    "artifacts/tables/xgb_sensitivity_repeats.csv": "7016509e2c633b672209c2425ddcfebc24b4b64aec3d9f144fed5416a601dd94",
+    "artifacts/tables/xgb_final_test_summary.csv": "046e18def975f88ba4aab955a221e7ba350a663d01dd1615018f01d928a39d04",
+    "artifacts/tables/xgb_pareto_comparison.csv": "f994fc36ebe7304228974bcb707060cff3cf8c2726384be96330667e6456a305",
+    "artifacts/shap/xgb_default_importance_by_fold.csv": "788ec48b778abe67336d13ee0f9b72dde7050ed8058163029894a969f8ef1918"
+  },
+  "figures": [
+    {
+      "file": "fig01_baseline_benchmark.png",
+      "bytes": 273083,
+      "sha256": "278fce0f5f6cbb644a1acc959bda0056941ee6c1a4c2a0a9530380279218d13d"
+    },
+    {
+      "file": "fig01_baseline_benchmark.pdf",
+      "bytes": 24765,
+      "sha256": "0706c626938f140a424c29e8f599df7342e9313e0b942397526a692275eb5d84"
+    },
+    {
+      "file": "fig02_hpo_objective_space_pareto.png",
+      "bytes": 332934,
+      "sha256": "a2b4b35e62e1ba1e1f6ce9bb9d4c86e61c047574969e3e87b53feff3fb20b794"
+    },
+    {
+      "file": "fig02_hpo_objective_space_pareto.pdf",
+      "bytes": 29249,
+      "sha256": "f1f07fa4d328501b1e6516221e67462aea41b1cb26cab16d343d4830cb28602b"
+    },
+    {
+      "file": "fig03_hyperparameter_tradeoff.png",
+      "bytes": 433702,
+      "sha256": "327845456d59a03d9c1264f1a266f35f86a07120950e0b0c48a2e91caad89d38"
+    },
+    {
+      "file": "fig03_hyperparameter_tradeoff.pdf",
+      "bytes": 24854,
+      "sha256": "89108299b74bb99eb82ea82929873581f48d6dbac4880808b70f0b37b03c7d43"
+    },
+    {
+      "file": "fig04_global_shap_importance.png",
+      "bytes": 339548,
+      "sha256": "fa829a78ad25909afc585e4c56993c623a101772972d48a853d44cd7eb925e37"
+    },
+    {
+      "file": "fig04_global_shap_importance.pdf",
+      "bytes": 30564,
+      "sha256": "9ad4fd2fe5bffc11433c3bcbf37d25cbd1ded95c6a5134ea1b86fdc6c073a916"
+    },
+    {
+      "file": "fig05_sensitivity_analysis_boxplots.png",
+      "bytes": 536559,
+      "sha256": "bd90e4e04c57841feb24886069e43234adbc458aca113819384d0698afc28659"
+    },
+    {
+      "file": "fig05_sensitivity_analysis_boxplots.pdf",
+      "bytes": 32059,
+      "sha256": "93cf187decc67035a4ccaed589f7b9125356cfa09a4e2861e0e1dab3c42bce53"
+    },
+    {
+      "file": "fig06_final_test_performance.png",
+      "bytes": 350566,
+      "sha256": "322a52bdc9dc4f899fad0b5578526a283e67fa2cfc61b0776ffe58d547f2bdfd"
+    },
+    {
+      "file": "fig06_final_test_performance.pdf",
+      "bytes": 30181,
+      "sha256": "8f1e94a36c5baeecf4b612f2c0f2926387ab518d1369dc37f8fce00b671aecac"
+    },
+    {
+      "file": "fig07_summary_tradeoff_landscape.png",
+      "bytes": 379573,
+      "sha256": "39ac8035f3f9cb89f53d9778a9f248bf883281a7c3fc7c9f3e613550c379b394"
+    },
+    {
+      "file": "fig07_summary_tradeoff_landscape.pdf",
+      "bytes": 28917,
+      "sha256": "7a9b16c2da810901a2f36688b38ebbde6009e55bad18022cf8919a3de0dcac93"
+    },
+    {
+      "file": "fig08_shap_rank_variation.png",
+      "bytes": 316113,
+      "sha256": "4a46ffda174b35a9e51c8c0031dec958788547ed2cc4fbe1d50cb9bd3bc7a88c"
+    },
+    {
+      "file": "fig08_shap_rank_variation.pdf",
+      "bytes": 57010,
+      "sha256": "8054430feac3a071abd39b1a46a84b9e94971fbeebf3b1c3432df68643d7c6c0"
+    }
+  ],
+  "limitations": {
+    "baseline_roc_pr": "Unavailable: per-fold probabilities were not saved. Means/SD are shown instead.",
+    "final_test_roc_pr": "Unavailable: held-out probabilities were not saved. AUC/AP and actual confusion counts are shown instead.",
+    "reference_shap": "Default XGBoost only; five Core-fold models evaluated on the fixed 1,000-row Reference set.",
+    "final_test_shap": "Not computed; Figure 07 retains Development Reference stability on its y axis.",
+    "hyperparameters": "Locked search-range normalization; parameter associations are exploratory, not causal effects.",
+    "uncertainty": "Error bars use recorded fold SD. Overlapping CV partitions do not constitute independent datasets."
+  },
+  "availability": {
+    "fig04_global_shap_importance": "observed_reference_importance",
+    "fig06_final_test_performance": "aggregate_metrics_and_saved_confusion_counts_no_curves",
+    "fig08_shap_rank_variation": "observed_reference_feature_ranks"
+  }
+}

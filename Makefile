@@ -1,9 +1,8 @@
-.PHONY: help install data prepare split baseline test clean
+.PHONY: help install data prepare split baseline figures notebooks test clean
 
 VENV ?= .venv
-PYTHON ?= $(VENV)/bin/python
-PIP ?= $(VENV)/bin/pip
-PYTEST ?= $(VENV)/bin/pytest
+PYTHON ?= $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,python3)
+PIP ?= $(PYTHON) -m pip
 
 help:
 	@echo "Available commands:"
@@ -12,6 +11,8 @@ help:
 	@echo "  make prepare   - Validate raw dataset & print summary statistics"
 	@echo "  make split     - Generate 80/20 split, SHAP reference and 5-fold CV on Core"
 	@echo "  make baseline  - Run 6 baseline models benchmark"
+	@echo "  make figures   - Export Chapter 3 PNG/PDF figures from saved artifacts"
+	@echo "  make notebooks - Execute Chapter 3 notebooks into artifacts/notebooks/"
 	@echo "  make test      - Run automated unit and anti-leakage tests"
 	@echo "  make clean     - Remove Python bytecode and test cache files"
 
@@ -34,6 +35,12 @@ split:
 
 baseline:
 	$(PYTHON) scripts/02_run_baselines.py
+
+figures:
+	$(PYTHON) scripts/09_generate_figures.py
+
+notebooks:
+	$(PYTHON) scripts/10_execute_notebooks.py
 
 test:
 	$(PYTHON) -m pytest tests/ -v

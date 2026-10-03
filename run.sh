@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-VENV_PYTHON=".venv/bin/python"
-VENV_PYTEST=".venv/bin/pytest"
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+if [[ -z "${PYTHON:-}" ]]; then
+  if [[ -x .venv/bin/python ]]; then
+    PYTHON=".venv/bin/python"
+  else
+    PYTHON="python3"
+  fi
+fi
 
-case "$1" in
+case "${1:-}" in
   data)
     if [ -f "data/raw/default_credit_card.csv" ]; then
       echo "[INFO] Using data/raw/default_credit_card.csv"
@@ -13,16 +19,22 @@ case "$1" in
     fi
     ;;
   prepare)
-    $VENV_PYTHON scripts/00_prepare_data.py
+    "$PYTHON" scripts/00_prepare_data.py
     ;;
   split)
-    $VENV_PYTHON scripts/01_make_splits.py
+    "$PYTHON" scripts/01_make_splits.py
     ;;
   baseline)
-    $VENV_PYTHON scripts/02_run_baselines.py
+    "$PYTHON" scripts/02_run_baselines.py
+    ;;
+  figures)
+    "$PYTHON" scripts/09_generate_figures.py
+    ;;
+  notebooks)
+    "$PYTHON" scripts/10_execute_notebooks.py
     ;;
   test)
-    $VENV_PYTEST tests/ -v
+    "$PYTHON" -m pytest tests/ -v
     ;;
   clean)
     find . -type d -name "__pycache__" -exec rm -rf {} +
@@ -30,7 +42,7 @@ case "$1" in
     echo "[SUCCESS] Cleaned cache files."
     ;;
   *)
-    echo "Usage: ./run.sh {data|prepare|split|baseline|test|clean}"
+    echo "Usage: ./run.sh {data|prepare|split|baseline|figures|notebooks|test|clean}"
     exit 1
     ;;
 esac

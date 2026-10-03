@@ -131,6 +131,7 @@ artifacts/predictions/*
 # SHAP values & explanation matrices
 artifacts/shap/*
 !artifacts/shap/.gitkeep
+!artifacts/shap/xgb_default_importance_by_fold.csv
 
 # Execution logs
 artifacts/logs/*
@@ -146,9 +147,12 @@ artifacts/tables/*
 artifacts/tables/xgb_sensitivity_smoke_*
 artifacts/figures/*
 !artifacts/figures/.gitkeep
-# Bỏ comment nếu muốn lưu lại figure / table báo cáo cuối cùng:
-# !artifacts/figures/*.png
-# !artifacts/figures/*.pdf
+!artifacts/figures/*.png
+!artifacts/figures/*.pdf
+!artifacts/figures/figure_manifest.json
+artifacts/notebooks/
+# Hình báo cáo và manifest được giữ; notebook có outputs được sinh lại.
+# Bỏ comment nếu muốn lưu bảng LaTeX:
 # !artifacts/tables/*.tex
 
 # CatBoost training outputs
