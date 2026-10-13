@@ -205,6 +205,17 @@ Logistic Regression có precision 0,709027 cao nhất bảng nhưng recall 0,247
 
 Thời gian đủ năm fold được ghi là LR 2,934 giây, RF 3,984 giây, XGBoost 4,787 giây, CatBoost 4,937 giây, LightGBM 6,182 giây và GBM 52,370 giây. Đây là thời gian pipeline của một lượt chạy, không phải thời gian fit trung bình hoặc đánh giá độ trễ triển khai. Các artifact baseline chỉ lưu chỉ số tổng hợp; không có xác suất theo quan sát để dựng lại ROC/PR của từng fold. Vì vậy chương dùng biểu đồ metric thật và không nội suy đường cong từ một giá trị AUC/AP.
 
+**Bảng 3.2. Thời gian thực thi pipeline của 6 mô hình đối chứng trên 5-fold Core.**
+
+| Mô hình đối chứng | Thời gian hoàn thành 5 fold (giây) | Nền tảng / Thư viện | Cấu hình luồng thực thi |
+|:---|---:|:---|:---|
+| Logistic Regression | 2,934 | Scikit-learn 1.7.2 | StandardScaler + L-BFGS, tối đa 1.000 vòng lặp |
+| Random Forest | 3,984 | Scikit-learn 1.7.2 | 100 cây, `n_jobs=-1` |
+| XGBoost mặc định | 4,787 | XGBoost 3.2.0 | 200 cây, `max_depth=6`, `tree_method="hist"`, `n_jobs=-1` |
+| CatBoost | 4,937 | CatBoost 1.2.10 | 1.000 cây mặc định, tối ưu CPU |
+| LightGBM | 6,182 | LightGBM 4.7.0 | 100 cây, `n_jobs=-1` |
+| Gradient Boosting (GBM) | 52,370 | Scikit-learn 1.7.2 | 100 cây, giải thuật tuần tự đơn luồng |
+
 **Trả lời RQ4 ở mức benchmark:** XGBoost đối chứng đứng thứ năm trong sáu cấu hình về ROC-AUC. Sau HPO, các nghiệm XGBoost ưu tiên AUC và cân bằng vượt ROC-AUC trung bình của cả năm thuật toán đối chứng còn lại trên Core CV; phạm vi kết luận này được định lượng tiếp ở mục 3.11.
 
 ## 3.8. Kết quả XGBoost tối ưu đơn mục tiêu
@@ -213,7 +224,7 @@ TPE dùng phân bố tham số của các trial tốt và còn lại để đề
 
 Study chính hoàn thành 64 trial, mỗi trial dùng năm mô hình Core CV và cùng Reference. Trial **50** là nghiệm có ROC-AUC cao nhất **trong nhánh TPE**, bằng 0,787436; đây không phải AUC cao nhất của toàn bộ hai nhánh HPO. Các trial TPE có AUC từ 0,757544 đến 0,787436 và Spearman từ 0,804249 đến 0,957115.
 
-**Bảng 3.2. Đối chứng XGBoost và nghiệm TPE tốt nhất trên Development.**
+**Bảng 3.3. So sánh XGBoost mặc định và nghiệm TPE tốt nhất trên Development.**
 
 | Cấu hình | Trial | ROC-AUC CV | Spearman SHAP | Jaccard top-5 |
 |---|---:|---:|---:|---:|
@@ -236,6 +247,8 @@ Trong [xgb_multi_hpo_trials.csv](../artifacts/tables/xgb_multi_hpo_trials.csv), 
 ![Hình 3.2. Không gian mục tiêu Development: 64 trial NSGA-II, Pareto front, các nghiệm đã chọn và đối chứng.](../artifacts/figures/fig02_hpo_objective_space_pareto.png)
 
 Để trả lời RQ1 cho đủ chín tham số, bảng dưới tính tương quan Spearman giữa giá trị tham số và từng objective, **riêng trong mỗi study 64 trial**, từ các CSV đã lưu. Đây là tương quan giữa siêu tham số với chỉ số, khác với Spearman giữa các vector importance dùng làm objective stability.
+
+**Bảng 3.4. Ma trận tương quan Spearman giữa siêu tham số và hai hàm mục tiêu HPO.**
 
 | Siêu tham số | TPE: ρ với AUC | TPE: ρ với S | NSGA-II: ρ với AUC | NSGA-II: ρ với S |
 |---|---:|---:|---:|---:|
@@ -266,6 +279,8 @@ $$
 
 Kiểm toán độc lập trong [pareto.py](../src/creditrisk/pareto.py) tìm được **sáu nghiệm không bị chi phối với sáu cặp objective khác nhau**, khớp kết quả Optuna. Bảng đầy đủ nằm trong [xgb_pareto_audit.csv](../artifacts/tables/xgb_pareto_audit.csv); [xgb_pareto_checks.csv](../artifacts/tables/xgb_pareto_checks.csv) lưu các điều kiện kiểm tra. Pareto front này được xác định trong nhánh NSGA-II chính, không phải tất cả cấu hình XGBoost có thể có.
 
+**Bảng 3.5. Kết quả kiểm toán độc lập Pareto front của study NSGA-II chính thức.**
+
 | Trial | ROC-AUC CV | Spearman SHAP | Jaccard top-5 | Khoảng cách chuẩn hóa tới (1,1) | Vai trò |
 |---|---:|---:|---:|---:|---|
 | 22 | 0,785528 | 0,950296 | 0,628571 | 0,609681 | Không chọn |
@@ -284,7 +299,7 @@ $$
 
 Sau khi loại hai nghiệm cực trị đã chọn, nghiệm còn lại có $d$ nhỏ nhất là trial 61, với $\widetilde f_1=0,896970$, $\widetilde f_2=0,416487$ và $d=0,592539$. Điểm $(1,1)$ ở đây là **điểm lý tưởng trong không gian đã chuẩn hóa**. Không chọn bằng khoảng cách thô tới AUC=1 và Spearman=1. Nếu một chiều có biên độ bằng 0, implementation gán giá trị chuẩn hóa của chiều đó là 1. Các quy tắc phá hòa ưu tiên objective còn lại và mã trial nhỏ hơn; không dùng Test.
 
-**Bảng 3.3. Các nghiệm đại diện và đối chứng trên Development.**
+**Bảng 3.6. Các nghiệm đại diện và đối chứng trên Development.**
 
 | Nguồn | Vai trò | Trial | ROC-AUC CV | Spearman | Jaccard top-5 | Δ AUC so với TPE | Δ Spearman so với TPE |
 |---|---|---:|---:|---:|---:|---:|---:|
@@ -295,6 +310,8 @@ Sau khi loại hai nghiệm cực trị đã chọn, nghiệm còn lại có $d$
 | NSGA-II | Cân bằng | 61 | 0,786497 | 0,950198 | 0,595238 | −0,000938 | +0,048715 |
 
 Nguồn: [xgb_pareto_selected.csv](../artifacts/tables/xgb_pareto_selected.csv) và [xgb_pareto_comparison.csv](../artifacts/tables/xgb_pareto_comparison.csv). Trial 44 chi phối nghiệm TPE theo hai objective trong CV chính. Trial 61 tăng Spearman nhưng giảm AUC và Jaccard so với TPE, nên là một lựa chọn đánh đổi. Jaccard không phải objective của Pareto front này.
+
+**Bảng 3.7. Cấu hình siêu tham số chi tiết của các ứng viên tối ưu đã khóa.**
 
 | Siêu tham số | TPE 50 | Pareto AUC 44 | Pareto stability 57 | Pareto balanced 61 |
 |---|---:|---:|---:|---:|
@@ -318,7 +335,7 @@ Trên CV chính, trial 44 đạt ROC-AUC 0,787721, trial TPE 50 đạt 0,787436 
 
 Các cấu hình được khóa trước khi chấm Test. Mỗi cấu hình được fit một lần trên toàn bộ Development 24.000 mẫu. [Manifest Final Test](../artifacts/tables/xgb_final_test_manifest.json) ghi `status=complete`, `completed_model_fits=5`, `completed_test_evaluations=5`, `test_used_for_selection=false` và `shap_computed_on_test=false`.
 
-**Bảng 3.4. Khả năng dự đoán trên Final Test độc lập.**
+**Bảng 3.8. Khả năng dự đoán trên Final Test độc lập.**
 
 | Cấu hình | AUC CV chính | Spearman Development qua 10 phân hoạch | ROC-AUC Test | AP Test | Brier Test |
 |---|---:|---:|---:|---:|---:|
@@ -328,11 +345,11 @@ Các cấu hình được khóa trước khi chấm Test. Mỗi cấu hình đư
 | TPE tối ưu AUC | 0,787436 | 0,911472 | 0,781011 | 0,558185 | 0,134681 |
 | XGBoost đối chứng | 0,772620 | 0,837589 | 0,769664 | 0,539973 | 0,137585 |
 
-Nguồn: [xgb_final_test_summary.csv](../artifacts/tables/xgb_final_test_summary.csv) và [xgb_sensitivity_summary.csv](../artifacts/tables/xgb_sensitivity_summary.csv). Cột stability là số đo trên **Development**, không phải trên Test. Bảng 3.5 về độ nhạy được trình bày ở mục 3.12.
+Nguồn: [xgb_final_test_summary.csv](../artifacts/tables/xgb_final_test_summary.csv) và [xgb_sensitivity_summary.csv](../artifacts/tables/xgb_sensitivity_summary.csv). Cột stability là số đo trên **Development**, không phải trên Test. Bảng 3.11 về độ nhạy được trình bày ở mục 3.12.
 
 Balanced đạt AUC, AP cao nhất và Brier thấp nhất **trong năm cấu hình đã khóa**. So với TPE, chênh lần lượt **+0,000780 AUC**, **+0,000835 AP**, **−0,000060 Brier**. Các chênh nhỏ được diễn giải mô tả; dữ liệu tổng hợp hiện có không đủ để tính khoảng tin cậy ghép cặp hoặc kiểm định khác biệt AUC Test. Thứ tự trial 44 và trial 61 thay đổi từ CV sang Test, nên không thể lấy nghiệm dẫn đầu CV làm bằng chứng chắc chắn về nghiệm dẫn đầu dữ liệu mới.
 
-**Các chỉ số tại ngưỡng 0,5 trên Final Test.**
+**Bảng 3.9. Các chỉ số phân loại tại ngưỡng xác suất 0,5 và ma trận nhầm lẫn trên Final Test.**
 
 | Cấu hình | Precision | Recall | F1 | Balanced Accuracy | TN / FP / FN / TP |
 |---|---:|---:|---:|---:|---:|
@@ -354,6 +371,8 @@ TreeSHAP native được tính trên **raw margin log-odds**, loại cột bias 
 
 Tệp [xgb_default_importance_by_fold.csv](../artifacts/shap/xgb_default_importance_by_fold.csv) lưu năm vector global importance thật của **XGBoost đối chứng** trên 1.000 Reference, với 23 biến ban đầu. Tệp này cho phép kiểm tra biến thiên theo fold nhưng không có SHAP theo từng quan sát để dựng beeswarm. Các vector chi tiết của trial TPE và Pareto không được bảo tồn trong artifact hiện tại; do đó không thể khẳng định top-10 cụ thể của từng nghiệm hoặc so sánh định lượng theo từng biến giữa đủ năm cấu hình.
 
+**Bảng 3.10. Bảng độ biến thiên Global TreeSHAP của 10 biến hàng đầu trên XGBoost đối chứng.**
+
 | Biến của XGBoost đối chứng | Mean absolute SHAP ± std qua fold | Khoảng thứ hạng qua năm fold |
 |---|---:|---:|
 | `PAY_0` | 0,542911 ± 0,005725 | 1–1 |
@@ -371,9 +390,13 @@ Tệp [xgb_default_importance_by_fold.csv](../artifacts/shap/xgb_default_importa
 
 `PAY_0` và `LIMIT_BAL` lần lượt giữ hạng 1 và 2 ở cả năm fold; `BILL_AMT1` đứng hạng 3–4. Các biến thấp hơn có thể đổi thứ hạng đáng kể, như `BILL_AMT3` từ 6 đến 17. Trung bình trị tuyệt đối cho biết độ lớn đóng góp của mô hình, không cho biết chiều tăng/giảm default, cũng không cho phép kết luận nhân quả về hành vi thanh toán.
 
+![Hình 3.6. Ma trận biến thiên thứ hạng đặc trưng TreeSHAP của XGBoost đối chứng qua 5 fold Core.](../artifacts/figures/fig08_shap_rank_variation.png)
+
+Hình 3.6 trình bày ma trận nhiệt biểu diễn biến thiên thứ hạng của các đặc trưng TreeSHAP qua 5 fold kiểm định chéo Core đối với mô hình XGBoost đối chứng. Có thể quan sát thấy hai biến chi phối hàng đầu là `PAY_0` và `LIMIT_BAL` duy trì sự ổn định tuyệt đối tại vị trí thứ 1 và thứ 2 qua mọi fold (màu sáng đồng nhất). Ngược lại, các biến tài chính ở nhóm giữa như `BILL_AMT3` (biến thiên từ hạng 6 đến hạng 17), `PAY_AMT2` (hạng 3 đến 5), `PAY_2` (hạng 7 đến 15) chứng kiến sự xáo trộn thứ hạng mạnh mẽ giữa các lần phân chia dữ liệu huấn luyện, phản ánh trực tiếp căn nguyên kỹ thuật của sự bất ổn định giải thích do tương quan đa cộng tuyến giữa các chỉ số lịch sử trả nợ.
+
 Sau khi khóa năm cấu hình, kiểm tra độ nhạy thay đổi seed phân hoạch Core từ 101 đến 110, giữ nguyên Reference và seed mô hình 42.
 
-**Bảng 3.5. Stability và AUC qua 10 phân hoạch Core mới.**
+**Bảng 3.11. Stability và AUC qua 10 phân hoạch Core mới (seed 101–110).**
 
 | Cấu hình | ROC-AUC CV ± std | Spearman SHAP ± std | Jaccard top-5 ± std |
 |---|---:|---:|---:|
@@ -385,7 +408,7 @@ Sau khi khóa năm cấu hình, kiểm tra độ nhạy thay đổi seed phân h
 
 Nguồn: [xgb_sensitivity_repeats.csv](../artifacts/tables/xgb_sensitivity_repeats.csv), [summary](../artifacts/tables/xgb_sensitivity_summary.csv), [paired summary](../artifacts/tables/xgb_sensitivity_paired_summary.csv). Tổng số lần fit/TreeSHAP là 250; không dùng nhãn Test.
 
-![Hình 3.6. Phân phối và chênh lệch ghép cặp qua 10 phân hoạch Core.](../artifacts/figures/fig05_sensitivity_analysis_boxplots.png)
+![Hình 3.7. Phân phối và chênh lệch ghép cặp qua 10 phân hoạch Core (Boxplots độ nhạy).](../artifacts/figures/fig05_sensitivity_analysis_boxplots.png)
 
 Cả ba nghiệm Pareto có Spearman cao hơn TPE ở **10/10 phân hoạch**. Nghiệm ưu tiên stability có S trung bình 0,972586 và std 0,002856, nhỏ hơn TPE 0,017231. Tuy nhiên, balanced có Jaccard trung bình **0,699524**, thấp hơn TPE **0,767619**; chênh Jaccard âm ở bảy seed và bằng 0 ở ba seed sau khi loại sai số dấu phẩy động (làm tròn chênh lệch 12 chữ số). Vì vậy, ưu thế stability của balanced phải được hiểu theo **objective Spearman**, không phải độ ổn định top-5 hay mọi loại giải thích.
 
@@ -393,11 +416,22 @@ Notebook 06 thực hiện kiểm định ghép cặp hai phía từ mười dòn
 
 Các p-value này là **phân tích khám phá có điều kiện trên một Core và Reference cố định**. Phân hoạch dùng chung quan sát, các tập train chồng lấn, và các cấu hình đã được chọn trên chính Development; Holm không giải quyết phụ thuộc do tái sử dụng dữ liệu hay thiên lệch lựa chọn. Wilcoxon dựa trên giả định về phân bố chênh lệch và tính độc lập; paired t-test còn giả định phù hợp của phân bố chênh lệch cho suy luận t. [Tài liệu SciPy về Wilcoxon](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html). Bằng chứng chắc chắn từ artifact là dấu và độ lớn chênh qua mười phân hoạch; p-value không chứng minh ưu thế phổ quát hoặc ưu thế trên Test.
 
+**Bảng 3.12. Chênh lệch ghép cặp chi tiết giữa các nghiệm Pareto và hai đối chứng qua 10 phân hoạch Core.**
+
+| Nghiệm Pareto | Đối chứng so sánh | Δ ROC-AUC trung bình ± std | Δ Spearman SHAP trung bình ± std | Δ Top-5 Jaccard trung bình ± std |
+|:---|:---|---:|---:|---:|
+| Pareto ưu tiên AUC | TPE tối ưu AUC | −0,000049 ± 0,000333 | +0,022441 ± 0,007195 | +0,015238 ± 0,095329 |
+| Pareto ưu tiên AUC | XGBoost mặc định | +0,012786 ± 0,000998 | +0,096324 ± 0,034383 | −0,007143 ± 0,078744 |
+| Pareto cân bằng | TPE tối ưu AUC | −0,000465 ± 0,000389 | +0,036304 ± 0,011394 | −0,068095 ± 0,061797 |
+| Pareto cân bằng | XGBoost mặc định | +0,012369 ± 0,001138 | +0,110188 ± 0,034939 | −0,090476 ± 0,046217 |
+| Pareto ưu tiên ổn định | TPE tối ưu AUC | −0,010752 ± 0,000459 | +0,061113 ± 0,017529 | +0,105714 ± 0,101145 |
+| Pareto ưu tiên ổn định | XGBoost mặc định | +0,002082 ± 0,001434 | +0,134997 ± 0,039128 | +0,083333 ± 0,095743 |
+
 ## 3.13. Phân tích trade-off giữa performance và stability
 
 **Trả lời RQ3:** trong ngân sách đã dùng, NSGA-II tìm được tập cấu hình cung cấp lựa chọn cân bằng hơn theo **hai objective ROC-AUC và Spearman**. Trial 44 tốt hơn TPE ở cả hai objective trong CV chính; trial 61 hy sinh 0,000938 AUC để tăng 0,048715 Spearman; trial 57 tăng 0,072112 Spearman nhưng giảm 0,011593 AUC. Đây là lợi ích của tập nghiệm nhiều phương án, không phải khẳng định sampler NSGA-II luôn thắng TPE.
 
-**Bảng 3.6. Chênh lệch giữa các nghiệm Pareto và TPE theo từng giai đoạn.**
+**Bảng 3.13. Chênh lệch giữa các nghiệm Pareto và TPE theo từng giai đoạn.**
 
 | Pareto trừ TPE | Δ AUC CV chính | Δ Spearman CV chính | Δ AUC qua 10 phân hoạch | Δ Spearman qua 10 phân hoạch | Δ Jaccard qua 10 phân hoạch | Δ AUC Test |
 |---|---:|---:|---:|---:|---:|---:|
@@ -407,7 +441,7 @@ Các p-value này là **phân tích khám phá có điều kiện trên một Co
 
 Bảng dùng chênh lệch ghép cặp theo seed ở giai đoạn độ nhạy. Nghiệm ưu tiên AUC có AUC cao hơn TPE ở 4/10 seed và thấp hơn ở 6/10, nên ưu thế CV chính không được lặp lại theo cùng chiều ở mọi phân hoạch. Balanced có AUC thấp hơn TPE ở 9/10 seed nhưng Spearman cao hơn ở cả mười. Nghiệm ưu tiên stability thể hiện đánh đổi mạnh nhất và có recall Test thấp nhất.
 
-![Hình 3.7. Hiệu năng Development và Final Test cùng stability đo trên Development; không có stability Test.](../artifacts/figures/fig07_summary_tradeoff_landscape.png)
+![Hình 3.8. Bức tranh toàn cảnh không gian đánh đổi (Trade-off Landscape) giữa hiệu năng và độ ổn định.](../artifacts/figures/fig07_summary_tradeoff_landscape.png)
 
 Một cơ sở toán học để diễn giải RQ1 là mục tiêu regularized của boosted trees:
 
@@ -452,6 +486,8 @@ Các hướng phát triển phù hợp là nhiều bộ dữ liệu và kiểm t
 ## 3.15. Tóm tắt chương
 
 Bốn câu hỏi nghiên cứu được trả lời trực tiếp trong phạm vi bộ dữ liệu và protocol đã thực hiện:
+
+**Bảng 3.14. Ma trận tổng kết câu trả lời cho 4 câu hỏi nghiên cứu RQ1–RQ4.**
 
 | Câu hỏi | Câu trả lời từ bằng chứng thực nghiệm | Giới hạn diễn giải |
 |---|---|---|
